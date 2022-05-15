@@ -1,5 +1,6 @@
 import path from 'path';
-import { BrowserWindow, app } from 'electron';
+import { BrowserWindow, app } from 'electron'
+import { Library } from 'ffi-napi'
 
 // 開発モードの場合はホットリロードする
 if (process.env.NODE_ENV === 'development') {
@@ -25,8 +26,19 @@ const createWindow = () => {
     mainWindow.loadFile('dist/index.html');
 };
 
+const callHelloWorld = () => {
+    const mylib = Library('helloword', {
+        'HelloWorld': ['string', []]
+    });
+    const hello = mylib.HelloWorld();
+    console.log(hello);
+}
+
 // アプリの起動イベント発火で上の関数を実行
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+    callHelloWorld();
+    createWindow();
+});
 
 // すべてのウィンドウが閉じられたらアプリを終了する
 app.once('window-all-closed', () => app.quit());
